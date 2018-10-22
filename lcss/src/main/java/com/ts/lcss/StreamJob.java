@@ -46,15 +46,15 @@ public class StreamJob {
 	    public static void main(String[] args) throws Exception {
 	        // set up the streaming execution environment
 	        final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-	        //env.setParallelism(2);
+	        env.setParallelism(2);
 	        //env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
-	        //env.enableCheckpointing(5000);
+	        env.enableCheckpointing(30000);
 	        Properties properties = new Properties();
 	        properties.setProperty("bootstrap.servers", "127.0.0.1:9092,127.0.0.1:9093,127.0.0.1:9094");
 	        //properties.setProperty("zookeeper.connect", "192.168.0.169:2181");
 	        properties.setProperty("group.id", "consumer");
 	       // properties.setProperty("flink.partition-discovery.interval-millis", "500");  //check partition auto
-	        DataStream<GPSTrack> stream1 = env.addSource(new FlinkKafkaConsumer010<String>("gpstracks", new SimpleStringSchema(), properties).setStartFromLatest()).map(new MapFunction<String, GPSTrack>() {
+	        DataStream<GPSTrack> stream1 = env.addSource(new FlinkKafkaConsumer010<String>("gpstracks", new SimpleStringSchema(), properties).setStartFromEarliest()).map(new MapFunction<String, GPSTrack>() {
 	            /**
 				 * 
 				 */
@@ -73,10 +73,10 @@ public class StreamJob {
 	            public long extractAscendingTimestamp(GPSTrack gpsTracks) {
 	                return gpsTracks.getTimeStamp();
 	            }
-	        });
+	        }).map(new MyMapper());
 	        
 	       stream1.print();
-	        DataStream<GPSTrack> stream2 = env.addSource(new FlinkKafkaConsumer010<String>("track2", new SimpleStringSchema(), properties).setStartFromLatest()).map(new MapFunction<String, GPSTrack>() {
+	        DataStream<GPSTrack> stream2 = env.addSource(new FlinkKafkaConsumer010<String>("track2", new SimpleStringSchema(), properties).setStartFromEarliest()).map(new MapFunction<String, GPSTrack>() {
 				/**
 				 * 
 				 */
@@ -94,13 +94,13 @@ public class StreamJob {
 	            public long extractAscendingTimestamp(GPSTrack gpsTracks) {
 	                return gpsTracks.getTimeStamp();
 	            }
-	        });
+	        }).map(new MyMapper());
 	        stream2.print();
 	        DataStream<GPSTrack> stream = stream1.union(stream2);
-	        stream.windowAll(SlidingProcessingTimeWindows.of(Time.seconds(30), Time.seconds(15))).apply(new AllWindowFunction<GPSTrack,Double, TimeWindow>() {
+	        stream.windowAll(SlidingProcessingTimeWindows.of(Time.seconds(30), Time.seconds(15))).apply(new AllWindowFunction<GPSTrack,String, TimeWindow>() {
 
 
-				public void apply(TimeWindow window, Iterable<GPSTrack> values, Collector<Double> out) throws Exception {
+				public void apply(TimeWindow window, Iterable<GPSTrack> values, Collector<String> out) throws Exception {
 					// TODO Auto-generated method stub
 					System.out.println(df.format(new Date()));
 					ArrayList<GPSTrack> list1=new ArrayList<GPSTrack>();
@@ -117,6 +117,7 @@ public class StreamJob {
 					TrajectoryLCSS lcss=new TrajectoryLCSS(list1, list2);
 					System.out.println(lcss.getMatchRatio());
 					System.out.println(df.format(new Date()));
+					out.collect(window.getStart()+"  "+window.getEnd());
 				}
 			});
 

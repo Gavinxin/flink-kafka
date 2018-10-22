@@ -1,24 +1,46 @@
 package com.ts.lcss;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class GPSTrack {
 	 	
-
-		private int id;
+		private static Long i=0L;
+		private Long id;
+		private int uid;
 	    private Long timeStamp;
+	    private Date intime;
+	    private Date outtime;
 	    private Double longitude;
 	    private Double latitude;
 	    private String note;
 
-	    public void setNote(String note) {
+	    public Date getIntime() {
+			return intime;
+		}
+
+		public void setIntime(Date intime) {
+			this.intime = intime;
+		}
+
+		public Date getOuttime() {
+			return outtime;
+		}
+
+		public void setOuttime(Date outtime) {
+			this.outtime = outtime;
+		}
+
+		public void setNote(String note) {
 	        this.note = note;
 	    }
 
 	    public GPSTrack(String s){
 	        String[] tmp=s.split(",");
-	        id=Integer.parseInt(tmp[0]);
+	        id=i++;
+	        uid=Integer.parseInt(tmp[0]);
 	        timeStamp=Date2TimeStamp(tmp[1],"yyyy-MM-dd HH:mm:ss");
+	        intime=new Date();
 	        longitude=Double.parseDouble(tmp[2]);
 	        latitude=Double.parseDouble(tmp[3]);
 	    }
@@ -40,7 +62,7 @@ public class GPSTrack {
 	        return longitude;
 	    }
 
-	    public int getId() {
+	    public Long getId() {
 	        return id;
 	    }
 	    private static Long Date2TimeStamp(String dateStr, String format) {
@@ -55,8 +77,16 @@ public class GPSTrack {
 
 	    @Override
 	    public String toString() {
-	        return Integer.toString(id)+" "+timeStamp.toString()+" "+longitude.toString()+" "+latitude.toString()+" "+note;
+	        return id + " " + Integer.toString(uid)+" "+timeStamp.toString()+" "+longitude.toString()+" "+latitude.toString()+" "+note;
 	    }
+
+		public int getUid() {
+			return uid;
+		}
+
+		public void setUid(int uid) {
+			this.uid = uid;
+		}
 
 		public Long getTimeStamp() {
 			return timeStamp;
