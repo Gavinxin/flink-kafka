@@ -1,4 +1,4 @@
-package com.ts.lcss;
+package com.lcss.stream;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
@@ -21,7 +21,7 @@ import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer010;
 import org.apache.flink.util.Collector;
 
-import com.ts.lcss.StreamJob.MyMapper;
+import com.lcss.stream.StreamJob.MyMapper;
 
 public class Performance {
 	public static  SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -54,7 +54,7 @@ public class Performance {
         Properties properties = new Properties();
         properties.setProperty("bootstrap.servers", "127.0.0.1:9092,127.0.0.1:9093,127.0.0.1:9094");
         //properties.setProperty("zookeeper.connect", "192.168.0.169:2181");
-        properties.setProperty("group.id", "pertes");
+        properties.setProperty("group.id", "test");
        // properties.setProperty("flink.partition-discovery.interval-millis", "500");  //check partition auto
         DataStream<GPSTrack> stream1 = env.addSource(new FlinkKafkaConsumer010<String>("PerformanceTest", new SimpleStringSchema(), properties).setStartFromEarliest()).map(new MapFunction<String, GPSTrack>() {
             /**

@@ -1,14 +1,18 @@
-package com.ts.lcss;
+package com.lcss.stream;
 
+import java.awt.Window;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.functions.RichMapFunction;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
+import org.apache.flink.api.java.functions.KeySelector;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
@@ -54,7 +58,7 @@ public class StreamJob {
 	        //properties.setProperty("zookeeper.connect", "192.168.0.169:2181");
 	        properties.setProperty("group.id", "consumer");
 	       // properties.setProperty("flink.partition-discovery.interval-millis", "500");  //check partition auto
-	        DataStream<GPSTrack> stream1 = env.addSource(new FlinkKafkaConsumer010<String>("gpstracks", new SimpleStringSchema(), properties).setStartFromEarliest()).map(new MapFunction<String, GPSTrack>() {
+	        DataStream<GPSTrack> stream = env.addSource(new FlinkKafkaConsumer010<String>("gpstracks", new SimpleStringSchema(), properties).setStartFromEarliest()).map(new MapFunction<String, GPSTrack>() {
 	            /**
 				 * 
 				 */
@@ -75,36 +79,20 @@ public class StreamJob {
 	            }
 	        }).map(new MyMapper());
 	        
-	       stream1.print();
-	        DataStream<GPSTrack> stream2 = env.addSource(new FlinkKafkaConsumer010<String>("track2", new SimpleStringSchema(), properties).setStartFromEarliest()).map(new MapFunction<String, GPSTrack>() {
+	       stream.print();
+	        stream.windowAll(SlidingProcessingTimeWindows.of(Time.seconds(30), Time.seconds(15))).apply(new AllWindowFunction<GPSTrack,String, TimeWindow>() {
+
+
 				/**
 				 * 
 				 */
 				private static final long serialVersionUID = 1L;
 
-				public GPSTrack map(String s) throws Exception {
-	                return new GPSTrack(s);
-	            }
-	        }).assignTimestampsAndWatermarks(new AscendingTimestampExtractor<GPSTrack>() {
-	            /**
-				 * 
-				 */
-				private static final long serialVersionUID = 1L;
-				@Override
-	            public long extractAscendingTimestamp(GPSTrack gpsTracks) {
-	                return gpsTracks.getTimeStamp();
-	            }
-	        }).map(new MyMapper());
-	        stream2.print();
-	        DataStream<GPSTrack> stream = stream1.union(stream2);
-	        stream.windowAll(SlidingProcessingTimeWindows.of(Time.seconds(30), Time.seconds(15))).apply(new AllWindowFunction<GPSTrack,String, TimeWindow>() {
-
-
 				public void apply(TimeWindow window, Iterable<GPSTrack> values, Collector<String> out) throws Exception {
 					// TODO Auto-generated method stub
-					System.out.println(df.format(new Date()));
-					ArrayList<GPSTrack> list1=new ArrayList<GPSTrack>();
-					ArrayList<GPSTrack> list2=new ArrayList<GPSTrack>();
+					
+					Map<Integer, List<GPSTrack>> map=new HashMap<Integer,List<GPSTrack>>();
+					/*ArrayList<GPSTrack> list2=new ArrayList<GPSTrack>();
 					values.forEach(t->{
 						if(t.getId()==1)
 							list1.add(t);
@@ -117,7 +105,29 @@ public class StreamJob {
 					TrajectoryLCSS lcss=new TrajectoryLCSS(list1, list2);
 					System.out.println(lcss.getMatchRatio());
 					System.out.println(df.format(new Date()));
-					out.collect(window.getStart()+"  "+window.getEnd());
+					out.collect(window.getStart()+"  "+window.getEnd());*/
+					values.forEach( g->{
+						int uid=g.getUid();
+						if(map.containsKey(g.getUid())){
+							 List<GPSTrack> list=map.get(uid);
+							 list.add(g);
+							 map.put(uid, list);
+						}
+						else{
+							List<GPSTrack> list= new ArrayList<GPSTrack>();
+							list.add(g);
+							map.put(uid, list);
+						}
+					});
+					double[][] dis=new double[map.size()][map.size()];
+					for(int i=0;i<map.size();i++)
+						for(int j=0;j<map.size();j++)
+						{
+							TrajectoryLCSS lcss=new TrajectoryLCSS(map.get(i), map.get(j));
+							dis[i][j]=lcss.getMatchRatio();
+						}
+					
+				
 				}
 			});
 

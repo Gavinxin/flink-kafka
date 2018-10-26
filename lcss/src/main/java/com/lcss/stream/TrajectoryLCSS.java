@@ -1,4 +1,4 @@
-package com.ts.lcss;
+package com.lcss.stream;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +9,7 @@ public class TrajectoryLCSS {
 	private GPSTrack[] LCS;
 	private double distThre;
 	private double matchRatio;
-	private static final double DEFAULT_DISTTHRE = 1;// 经纬度差值阈值大约0.001在地图上相差80-90米
+	private static final double DEFAULT_DISTTHRE = 0.1;// 经纬度差值阈值大约0.001在地图上相差80-90米
 	private int commonLen;
 
 	public TrajectoryLCSS(List<GPSTrack> T1, List<GPSTrack> T2) {

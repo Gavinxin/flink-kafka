@@ -1,4 +1,4 @@
-package com.ts.lcss;
+package com.lcss.stream;
 
 /**
  * Hello world!
