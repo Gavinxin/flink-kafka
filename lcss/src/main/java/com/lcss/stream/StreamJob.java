@@ -90,7 +90,7 @@ public class StreamJob {
 	    	
 			
 			// properties.setProperty("flink.partition-discovery.interval-millis", "500");  //check partition auto
-		DataStream<GPSTrack> stream = env
+	        DataStream<GPSTrack> stream = env
 				.addSource(
 						new FlinkKafkaConsumer010<String>("gpstracks",
 								new SimpleStringSchema(), properties)
@@ -114,7 +114,7 @@ public class StreamJob {
 	            public long extractAscendingTimestamp(GPSTrack gpsTracks) {
 	                return gpsTracks.getTimeStamp();
 	            }
-	        }).map(new MyMapper());
+	        }).map(new MyMapper()).setParallelism(5);
 	      
 	       stream.print();
 	        stream.windowAll(SlidingProcessingTimeWindows.of(Time.seconds(10), Time.seconds(5))).apply(new AllWindowFunction<GPSTrack,String, TimeWindow>() {
@@ -161,6 +161,9 @@ public class StreamJob {
 					System.out.println("map-size:"+map.size());
 					double[][] dis=new double[10][10];
 					TrajectoryLCSS lcss;
+					/*for (Integer key : map.keySet()) { 
+						  System.out.println("Key = " + key); 
+						} */
 					Iterator<Entry<Integer, ArrayList<GPSTrack>>> entries = map.entrySet().iterator(); 
 					int i=0,j=0;
 					while (entries.hasNext()) {		
@@ -175,16 +178,15 @@ public class StreamJob {
 					  i++;
 					 j=0;
 				}
-				System.out.println("---------------------------------------");
 				double[] res=CompareUtil.getTop1(dis);	
-				System.out.println(res.length);
+				System.out.print("最近距离：");
 				for (double t : res) {
 					System.out.print(t + "   ");
 				}
 				System.out.println();
 				System.out.println("---------------------------------");
 				}
-			});
+			}).setParallelism(2);
 	      
 	     
 	        env.execute();

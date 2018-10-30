@@ -6,10 +6,10 @@ import java.util.List;
 public class TrajectoryLCSS {
 	private List<GPSTrack> T1 = new ArrayList<GPSTrack>();
 	private List<GPSTrack> T2 = new ArrayList<GPSTrack>();
-	private GPSTrack[] LCS;
-	private double distThre;
-	private double matchRatio;
-	private static final double DEFAULT_DISTTHRE = 0.1;// 经纬度差值阈值大约0.001在地图上相差80-90米
+	private GPSTrack[] LCS; //经过的路径
+	private double distThre;  //误差变量
+	private double matchRatio;  //匹配度
+	private static final double DEFAULT_DISTTHRE = 0.01;// 经纬度差值阈值大约0.001在地图上相差80-90米
 	private int commonLen;
 
 	public TrajectoryLCSS(List<GPSTrack> T1, List<GPSTrack> T2) {
@@ -101,6 +101,7 @@ public class TrajectoryLCSS {
 	 */
 	public double getMatchRatio() {
 		if (matchRatio == 0) {
+			//
 			genLCSS();
 		}
 		return this.LCS.length / (double) (Math.min(T1.size(), T2.size()));
