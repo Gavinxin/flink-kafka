@@ -10,7 +10,7 @@ public class TrajectoryLCSS {
 	private double distThre;  //误差变量
 	private double matchRatio;  //匹配度
 	private static final double DEFAULT_DISTTHRE = 0.01;// 经纬度差值阈值大约0.001在地图上相差80-90米
-	private int commonLen;
+	private int commonLen; //共点
 
 	public TrajectoryLCSS(List<GPSTrack> T1, List<GPSTrack> T2) {
 		this.T1 = T1;
