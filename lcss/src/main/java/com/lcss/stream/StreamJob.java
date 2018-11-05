@@ -37,6 +37,7 @@ import org.apache.flink.util.Collector;
 import scala.collection.parallel.ParIterableLike.Partition;
 
 import com.lcss.util.CompareUtil;
+import com.lcss.util.TrajectoryLCSS;
 
 public class StreamJob {
 	public static  SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

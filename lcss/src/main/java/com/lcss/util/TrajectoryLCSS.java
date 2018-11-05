@@ -1,7 +1,9 @@
-package com.lcss.stream;
+package com.lcss.util;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import com.lcss.stream.GPSTrack;
 
 public class TrajectoryLCSS {
 	private List<GPSTrack> T1 = new ArrayList<GPSTrack>();
