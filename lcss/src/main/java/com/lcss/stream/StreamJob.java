@@ -35,6 +35,7 @@ import org.apache.flink.streaming.runtime.streamrecord.StreamRecord;
 import org.apache.flink.util.Collector;
 
 import scala.collection.parallel.ParIterableLike.Partition;
+import PoJo.GPSTrack;
 
 import com.lcss.util.CompareUtil;
 import com.lcss.util.TrajectoryLCSS;

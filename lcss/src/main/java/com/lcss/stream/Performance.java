@@ -21,6 +21,8 @@ import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer010;
 import org.apache.flink.util.Collector;
 
+import PoJo.GPSTrack;
+
 import com.lcss.stream.StreamJob.MyMapper;
 
 public class Performance {
