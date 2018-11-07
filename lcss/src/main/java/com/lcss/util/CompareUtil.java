@@ -1,10 +1,39 @@
 package com.lcss.util;
 
 
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import com.ts.lcss.MinHeap;
 
 public class CompareUtil {
+	public static <T> Map<Integer,Double> getTop_K(Map<Integer,Double> map){
+		Map<Integer,Double> descmap = sortMapByValueDescending(map);
+		return map;
+	}
+	public static  <K, V extends Comparable<? super V>> Map<K, V> sortMapByValueDescending(Map<K, V> map)
+    {
+        List<Map.Entry<K, V>> list = new LinkedList<Map.Entry<K, V>>(map.entrySet());
+        Collections.sort(list, new Comparator<Map.Entry<K, V>>()
+        {
+            @Override
+            public int compare(Map.Entry<K, V> o1, Map.Entry<K, V> o2)
+            {
+                int compare = (o1.getValue()).compareTo(o2.getValue());
+                return -compare;
+            }
+        });
+
+        Map<K, V> result = new LinkedHashMap<K, V>();
+        for (Map.Entry<K, V> entry : list) {
+            result.put(entry.getKey(), entry.getValue());
+        }
+        return result;
+    }
 	public static double[] getTop1(double[][] a){
 		double[] min=new double[a.length];
 		for(int i=0;i<a.length;i++)
@@ -65,7 +94,6 @@ public class CompareUtil {
 		double[] b=getTop1(a);
 		for (double d : b) {
 			System.out.println(d);
-		}
-		
+		}		
 	}
 }

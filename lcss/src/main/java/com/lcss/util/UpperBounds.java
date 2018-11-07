@@ -7,7 +7,6 @@ import PoJo.GPSTrack;
 import PoJo.MBEBox;
 
 public class UpperBounds {
-	private Long XTime;
 	private double XLnSpace;
 	private double XLaSpace;
 	private List<GPSTrack> Q = new ArrayList<GPSTrack>();
@@ -16,7 +15,6 @@ public class UpperBounds {
 	public UpperBounds(Long xTime, double xLnSpace, double xLaSpace,
 			List<GPSTrack> q, List<GPSTrack> t) {
 		super();
-		XTime = xTime;
 		XLnSpace = xLnSpace;
 		XLaSpace = xLaSpace;
 		Q = q;
@@ -34,8 +32,6 @@ public class UpperBounds {
 			mb.setUpperLatitude(g.getLatitude()+this.XLaSpace);
 			mb.setLowerLongitude(g.getLongitude()-this.XLnSpace);
 			mb.setUpperLongitude(g.getLongitude()+this.XLnSpace);
-			mb.setLowerTime(g.getTimeStamp()-this.XTime);
-			mb.setUpperTime(g.getTimeStamp()+this.XTime);
 			mblist.add(mb);
 		}
 		return mblist;
@@ -45,7 +41,7 @@ public class UpperBounds {
 		List<MBEBox> mblist=this.createMBE();
 		for (GPSTrack gpsTrack : T) {
 			for (MBEBox mbeBox : mblist) {
-				if(gpsTrack.getLatitude()>mbeBox.getLowerLatitude()&&gpsTrack.getLatitude()<mbeBox.getUpperLatitude()&&gpsTrack.getLongitude()>mbeBox.getLowerLongitude()&&gpsTrack.getLongitude()<mbeBox.getUpperLongitude()&&gpsTrack.getTimeStamp()>mbeBox.getLowerTime()&&gpsTrack.getTimeStamp()<mbeBox.getUpperTime())
+				if(gpsTrack.getLatitude()>mbeBox.getLowerLatitude()&&gpsTrack.getLatitude()<mbeBox.getUpperLatitude()&&gpsTrack.getLongitude()>mbeBox.getLowerLongitude()&&gpsTrack.getLongitude()<mbeBox.getUpperLongitude())
 					{
 						count++;
 						break;
