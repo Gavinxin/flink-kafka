@@ -3,17 +3,19 @@ package com.lcss.util;
 
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import com.ts.lcss.MinHeap;
 
 public class CompareUtil {
 	public static <T> Map<Integer,Double> getTop_K(Map<Integer,Double> map){
 		Map<Integer,Double> descmap = sortMapByValueDescending(map);
-		return map;
+		return descmap;
 	}
 	public static  <K, V extends Comparable<? super V>> Map<K, V> sortMapByValueDescending(Map<K, V> map)
     {
@@ -90,10 +92,13 @@ public class CompareUtil {
 		return lt;			
 	}
 	public static void main(String[] args) {
-		double a[][]={{1,2,2,2,2,7,2,2},{2,3,4,5,6,9}};
-		double[] b=getTop1(a);
-		for (double d : b) {
-			System.out.println(d);
-		}		
+		Map<Integer,Double> descmap = new HashMap<Integer, Double>();	
+		Map<Integer,Double> map = new HashMap<Integer, Double>();	
+		descmap.put(1, 2.1);
+		descmap.put(2, 2.5);
+		descmap.put(4, 8.1);
+		map=sortMapByValueDescending(descmap);
+		for (Entry<Integer, Double> entry : map.entrySet())
+			  System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue()); 
 	}
 }

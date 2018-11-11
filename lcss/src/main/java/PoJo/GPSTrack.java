@@ -8,8 +8,33 @@ public class GPSTrack {
 		private static Long i=0L;
 		private Long id;
 		private int uid;
+		private Integer pid;
 	    private Long timeStamp;
-	    private Date intime;
+	    public Integer getPid() {
+			return pid;
+		}
+
+		public void setPid(Integer pid) {
+			this.pid = pid;
+		}
+
+		public String getNote() {
+			return note;
+		}
+
+		public void setId(Long id) {
+			this.id = id;
+		}
+
+		public void setLongitude(Double longitude) {
+			this.longitude = longitude;
+		}
+
+		public void setLatitude(Double latitude) {
+			this.latitude = latitude;
+		}
+
+		private Date intime;
 	    private Date outtime;
 	    private Double longitude;
 	    private Double latitude;

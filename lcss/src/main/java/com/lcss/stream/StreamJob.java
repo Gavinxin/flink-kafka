@@ -72,12 +72,11 @@ public class StreamJob {
 			@Override
 			public int partition(GPSTrack key, int numPartitions) {
 				// TODO Auto-generated method stub
-				return key.getUid()%5;
+				if(key.getPid()!=null)
+					return key.getPid();
+				return key.getUid()%numPartitions;
 			}
 
-			
-		
-			
 		}
 	    public static void main(String[] args) throws Exception {
 	        // set up the streaming execution environment
@@ -116,12 +115,9 @@ public class StreamJob {
 	            public long extractAscendingTimestamp(GPSTrack gpsTracks) {
 	                return gpsTracks.getTimeStamp();
 	            }
-	        }).map(new MyMapper()).setParallelism(5);
-	      
+	        }).map(new MyMapper()).partitionCustom(new MyPartition(), 0);
 	       stream.print();
 	        stream.windowAll(SlidingProcessingTimeWindows.of(Time.seconds(10), Time.seconds(5))).apply(new AllWindowFunction<GPSTrack,String, TimeWindow>() {
-
-
 				/**
 				 * 
 				 */
@@ -136,8 +132,7 @@ public class StreamJob {
 						if(t.getId()==1)
 							list1.add(t);
 						else
-							list2.add(t);
-						
+							list2.add(t);			
 					});
 					System.out.println(list1.size()+ " " +list2.size());
 
@@ -189,8 +184,6 @@ public class StreamJob {
 				System.out.println("---------------------------------");
 				}
 			}).setParallelism(2);
-	      
-	     
 	        env.execute();
 	    }
 		 
