@@ -50,7 +50,7 @@ public class StreamJob {
 	        @Override
 	        public GPSTrack map(GPSTrack value) throws Exception {
 	        	GPSTrack temp = new GPSTrack();
-	            value.setNote(Integer.toString(pid));
+	            value.setPid(pid);
 	            temp = value;
 	            return temp;
 	        }
@@ -81,7 +81,7 @@ public class StreamJob {
 	        //env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
 	        env.enableCheckpointing(30000);
 	        Properties properties = new Properties();
-	        properties.setProperty("bootstrap.servers", "127.0.0.1:9092,127.0.0.1:9093,127.0.0.1:9094");
+	        properties.setProperty("bootstrap.servers", "localhost:9092,localhost:9093,localhost:9094");
 	        //properties.setProperty("zookeeper.connect", "192.168.0.169:2181");
 	        properties.setProperty("group.id", "consumer");
 	    	
@@ -137,9 +137,10 @@ public class StreamJob {
 					System.out.println(lcss.getMatchRatio());
 					System.out.println(df.format(new Date()));
 					out.collect(window.getStart()+"  "+window.getEnd());*/
-					
+					System.out.println("==============================================");
 					values.forEach( g->{
 						int uid=g.getUid();
+						System.out.println(g.toString());
 						if(map.containsKey(g.getUid())){
 							 ArrayList<GPSTrack> list=new ArrayList<GPSTrack>();
 							 list=map.get(uid);
@@ -152,6 +153,7 @@ public class StreamJob {
 							map.put(uid, list);
 						}
 					});
+					System.out.println("==============================================");
 					System.out.println("map-size:"+map.size());
 					double[][] dis=new double[10][10];
 					TrajectoryLCSS lcss;

@@ -102,7 +102,7 @@ public class GPSTrack {
 
 	    @Override
 	    public String toString() {
-	        return id + " " + Integer.toString(uid)+" "+timeStamp.toString()+" "+longitude.toString()+" "+latitude.toString()+" "+note;
+	        return id + " " + Integer.toString(uid)+" "+timeStamp.toString()+" "+longitude.toString()+" "+latitude.toString()+" "+pid;
 	    }
 
 		public int getUid() {
