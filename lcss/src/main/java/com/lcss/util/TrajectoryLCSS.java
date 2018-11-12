@@ -3,7 +3,7 @@ package com.lcss.util;
 import java.util.ArrayList;
 import java.util.List;
 
-import PoJo.GPSTrack;
+import com.pojos.GPSTrack;
 
 public class TrajectoryLCSS {
 	private List<GPSTrack> T1 = new ArrayList<GPSTrack>();

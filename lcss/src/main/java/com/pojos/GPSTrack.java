@@ -1,4 +1,4 @@
-package PoJo;
+package com.pojos;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

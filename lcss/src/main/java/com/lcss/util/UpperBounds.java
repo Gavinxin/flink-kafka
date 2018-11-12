@@ -3,8 +3,8 @@ package com.lcss.util;
 import java.util.ArrayList;
 import java.util.List;
 
-import PoJo.GPSTrack;
-import PoJo.MBEBox;
+import com.pojos.GPSTrack;
+import com.pojos.MBEBox;
 
 public class UpperBounds {
 	private double XLnSpace;

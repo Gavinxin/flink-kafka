@@ -11,17 +11,15 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 
+
+
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.functions.Partitioner;
 import org.apache.flink.api.common.functions.RichMapFunction;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
 import org.apache.flink.api.java.functions.KeySelector;
 import org.apache.flink.configuration.Configuration;
-import org.apache.flink.runtime.plugable.SerializationDelegate;
-import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
-import org.apache.flink.streaming.api.datastream.DataStreamSink;
-import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.timestamps.AscendingTimestampExtractor;
 import org.apache.flink.streaming.api.functions.windowing.AllWindowFunction;
@@ -29,16 +27,11 @@ import org.apache.flink.streaming.api.windowing.assigners.SlidingProcessingTimeW
 import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer010;
-import org.apache.flink.streaming.runtime.partitioner.CustomPartitionerWrapper;
-import org.apache.flink.streaming.runtime.partitioner.StreamPartitioner;
-import org.apache.flink.streaming.runtime.streamrecord.StreamRecord;
 import org.apache.flink.util.Collector;
-
-import scala.collection.parallel.ParIterableLike.Partition;
-import PoJo.GPSTrack;
 
 import com.lcss.util.CompareUtil;
 import com.lcss.util.TrajectoryLCSS;
+import com.pojos.GPSTrack;
 
 public class StreamJob {
 	public static  SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -65,18 +58,21 @@ public class StreamJob {
 		public static class MyPartition implements Partitioner<GPSTrack>{
 
 			/**
-			 * 
+			 * 按照uid分区
 			 */
 			private static final long serialVersionUID = 1L;
-
 			@Override
 			public int partition(GPSTrack key, int numPartitions) {
 				// TODO Auto-generated method stub
-				if(key.getPid()!=null)
-					return key.getPid();
 				return key.getUid()%numPartitions;
 			}
 
+		}
+		public static class MyKeyselector<T> implements KeySelector<T, T> {
+			@Override
+			public T getKey(T value) {
+				return value;
+			}
 		}
 	    public static void main(String[] args) throws Exception {
 	        // set up the streaming execution environment
@@ -115,7 +111,8 @@ public class StreamJob {
 	            public long extractAscendingTimestamp(GPSTrack gpsTracks) {
 	                return gpsTracks.getTimeStamp();
 	            }
-	        }).map(new MyMapper()).partitionCustom(new MyPartition(), 0);
+	        }).partitionCustom(new MyPartition(),new MyKeyselector<GPSTrack>()).map(new MyMapper());
+
 	       stream.print();
 	        stream.windowAll(SlidingProcessingTimeWindows.of(Time.seconds(10), Time.seconds(5))).apply(new AllWindowFunction<GPSTrack,String, TimeWindow>() {
 				/**
@@ -183,7 +180,7 @@ public class StreamJob {
 				System.out.println();
 				System.out.println("---------------------------------");
 				}
-			}).setParallelism(2);
+			});
 	        env.execute();
 	    }
 		 

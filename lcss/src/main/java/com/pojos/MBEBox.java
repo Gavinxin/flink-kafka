@@ -1,4 +1,4 @@
-package PoJo;
+package com.pojos;
 
 public class MBEBox {
 	private long lowerTime;
