@@ -13,6 +13,8 @@ import java.util.Properties;
 
 
 
+
+
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.functions.Partitioner;
 import org.apache.flink.api.common.functions.RichMapFunction;
@@ -26,7 +28,7 @@ import org.apache.flink.streaming.api.functions.windowing.AllWindowFunction;
 import org.apache.flink.streaming.api.windowing.assigners.SlidingProcessingTimeWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
-import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer010;
+import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer09;
 import org.apache.flink.util.Collector;
 
 import com.lcss.util.CompareUtil;
@@ -89,7 +91,7 @@ public class StreamJob {
 			// properties.setProperty("flink.partition-discovery.interval-millis", "500");  //check partition auto
 	        DataStream<GPSTrack> stream = env
 				.addSource(
-						new FlinkKafkaConsumer010<String>("gpstracks",
+						new FlinkKafkaConsumer09<String>("gpstracks",
 								new SimpleStringSchema(), properties)
 								.setStartFromLatest())
 				.map(new MapFunction<String, GPSTrack>() {
