@@ -81,7 +81,7 @@ public class StreamJob {
 	    public static void main(String[] args) throws Exception {
 	        // set up the streaming execution environment
 	        final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-	        //env.setParallelism(2);
+	        env.setParallelism(2);
 	        //env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
 	        env.enableCheckpointing(30000);
 	        Properties properties = new Properties();
@@ -116,7 +116,7 @@ public class StreamJob {
 	            }
 	        }).partitionCustom(new MyPartition(),new MyKeyselector<GPSTrack>()).map(new MyMapper());
 
-	       stream.print();
+	        stream.print();
 	        stream.windowAll(SlidingProcessingTimeWindows.of(Time.seconds(10), Time.seconds(5))).apply(new AllWindowFunction<GPSTrack,String, TimeWindow>() {
 				/**
 				 * 
