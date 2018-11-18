@@ -16,7 +16,6 @@ import java.util.Properties;
 
 
 
-
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.functions.Partitioner;
 import org.apache.flink.api.common.functions.RichMapFunction;
