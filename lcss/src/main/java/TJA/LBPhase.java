@@ -14,8 +14,7 @@ public class LBPhase {
 		this.k = k;
 		this.map = map;
 	}
-	public Map top_k(){
-		int a[]=new int[this.k];
+	public Map<Integer, Double> top_k(){
 		Map<Integer, Double> resultmap=new HashMap<Integer, Double>();
 		Map<Integer, Double> TopKmap=new HashMap<Integer, Double>();
 		resultmap=CompareUtil.sortMapByValueDescending(this.map);

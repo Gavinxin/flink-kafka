@@ -110,8 +110,8 @@ public class TrajectoryLCSS {
 	}
 
 	public static void main(String[] args) {
-		List<GPSTrack> T1 = new ArrayList<>();
-		List<GPSTrack> T2 = new ArrayList<>();
+		List<GPSTrack> T1 = new ArrayList<GPSTrack>();
+		List<GPSTrack> T2 = new ArrayList<GPSTrack>();
 		T1.add(new GPSTrack(114.300, 30.1));
 		T1.add(new GPSTrack(114.302, 30.101));
 		T1.add(new GPSTrack(114.3023, 30.1002));

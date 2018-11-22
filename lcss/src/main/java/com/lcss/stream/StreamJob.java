@@ -1,5 +1,6 @@
 package com.lcss.stream;
 
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -142,8 +143,7 @@ public class StreamJob {
 						 * System.out.println(df.format(new Date()));
 						 * out.collect(window.getStart()+"  "+window.getEnd());
 						 */
-						System.out
-								.println("==============================================");
+						System.out.println("===================================");
 						values.forEach(g -> {
 							int uid = g.getUid();
 							System.out.println(g.toString());
@@ -194,8 +194,8 @@ public class StreamJob {
 						System.out.println();
 						System.out.println("---------------------------------");
 					}
-				}).setParallelism(3);
-		env.execute();
+				}).setParallelism(1);
+		
 	}
 
 }

@@ -54,7 +54,7 @@ public class CompareUtil {
 		double top_k[][]=new double[dis.length][k];
 		for(int i=0;i<dis.length;i++)
 		{
-			double[] topk = new double[k]; 
+			double[] topk = new double[k];
 			for(int j = 0;j< k;j++)
 			{
 				topk[i] = dis[i][j];
