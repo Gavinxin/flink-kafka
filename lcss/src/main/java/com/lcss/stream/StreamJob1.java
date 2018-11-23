@@ -2,7 +2,6 @@ package com.lcss.stream;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -17,14 +16,20 @@ import org.apache.flink.api.java.functions.KeySelector;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.streaming.api.datastream.DataStream;
+import org.apache.flink.streaming.api.datastream.DataStreamSink;
+import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.timestamps.AscendingTimestampExtractor;
 import org.apache.flink.streaming.api.functions.windowing.AllWindowFunction;
+import org.apache.flink.streaming.api.windowing.assigners.TumblingProcessingTimeWindows;
+import org.apache.flink.streaming.api.windowing.assigners.WindowAssigner;
 import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer010;
 import org.apache.flink.util.Collector;
 
+import com.lcss.stream.StreamJob.MyMapper;
+import com.lcss.util.CompareUtil;
 import com.lcss.util.TrajectoryLCSS;
 import com.pojos.GPSTrack;
 
@@ -59,7 +64,7 @@ public class StreamJob1 {
 		final StreamExecutionEnvironment env = StreamExecutionEnvironment
 				.getExecutionEnvironment();
 		// env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
-		env.setParallelism(2);
+		env.setParallelism(3);
 		//env.enableCheckpointing(30000);
 		Properties properties = new Properties();
 		properties.setProperty("bootstrap.servers",
@@ -101,24 +106,24 @@ public class StreamJob1 {
 								return gpsTracks.getTimeStamp();
 							}
 						});
-		stream.partitionCustom(new MyPartition(), new MyKeyselector<GPSTrack>())
-				.map(new MyMapper())
-				.timeWindowAll(Time.seconds(10), Time.seconds(5)).apply(new AllWindowFunction<GPSTrack, Tuple3<Integer,Integer, Double>, TimeWindow>() {
+		
+			    DataStream<GPSTrack> streamPartition = stream.broadcast().map(new MyMapper()).setParallelism(3);
+			    
+			 SingleOutputStreamOperator<Tuple2<List<Tuple3<Integer, Integer, Double>>, List<Integer>>> streamLB = streamPartition.timeWindowAll(Time.seconds(20), Time.seconds(10)).apply(new AllWindowFunction<GPSTrack, Tuple2<List<Tuple3<Integer,Integer,Double>>, List<Integer>>, TimeWindow>() {
 
 					/**
-					 * 
+					 * LB Phase  找出每个partition的topk
 					 */
 					private static final long serialVersionUID = 1L;
-
 					@Override
 					public void apply(
 							TimeWindow window,
 							Iterable<GPSTrack> values,
-							Collector<Tuple3<Integer,Integer, Double>> out)
+							Collector<Tuple2<List<Tuple3<Integer,Integer,Double>>, List<Integer>>> out)
 							throws Exception {
 						// TODO Auto-generated method stub
 						List<Tuple3<Integer, Integer, Double>> list1=new ArrayList<Tuple3<Integer,Integer,Double>>();
-						Map<Integer, ArrayList<Tuple2<Integer, Double>>> mapout=new HashMap<Integer,ArrayList<Tuple2<Integer, Double>>>();
+						
 						Map<Integer, ArrayList<GPSTrack>> map = new HashMap<Integer, ArrayList<GPSTrack>>();
 						values.forEach(g -> {
 							int uid = g.getUid();
@@ -141,35 +146,57 @@ public class StreamJob1 {
 						 */
 						Iterator<Entry<Integer, ArrayList<GPSTrack>>> entries = map
 								.entrySet().iterator();
-						Iterator<Entry<Integer, ArrayList<GPSTrack>>> entries1 = map
-								.entrySet().iterator();
-						while (entries.hasNext()) {
-							Tuple3<Integer,Integer, Double> t=new Tuple3<Integer,Integer, Double>();
+					//	Map<Integer,Tuple2<List<Tuple3<Integer,Integer,Double>>, List<Integer>>> mapout= new HashMap<Integer, Tuple2<List<Tuple3<Integer,Integer,Double>>,List<Integer>>>();
+						if (entries.hasNext()) {	
 							Entry<Integer, ArrayList<GPSTrack>> entry = entries.next();
+						Iterator<Entry<Integer, ArrayList<GPSTrack>>> entries1 = map
+									.entrySet().iterator();
 							while (entries1.hasNext()) {
 								Entry<Integer, ArrayList<GPSTrack>> entry1 = entries1.next();
-								lcss = new TrajectoryLCSS(entry.getValue(),
-										entry1.getValue());
-								t.setField(entry.getKey(), 0);
-								t.setField(entry1.getKey(), 1);
-								t.setField(lcss.getMatchRatio(), 2); 
-								out.collect(t);
-								/*if (mapout.containsKey(entry.getKey())) {
-									ArrayList<Tuple2<Integer, Double>> list = mapout.get(entry.getKey());
-									list.add(t);
-									mapout.put(entry.getKey(), list);
-								} else {
-									ArrayList<Tuple2<Integer, Double>> list = new ArrayList<Tuple2<Integer, Double>>();
-									list.add(t);
-									mapout.put(entry.getKey(), list);
-								}*/
-							}
-						}
-						
 
+								if(entry.getKey()!=entry1.getKey())
+								{
+									lcss = new TrajectoryLCSS(entry.getValue(),
+										entry1.getValue());
+								    Tuple3<Integer,Integer, Double> t=new Tuple3<Integer, Integer, Double>(entry.getKey(), entry1.getKey(), lcss.getMatchRatio());
+								    list1.add(t);
+								   	
+								}
+							}
+							List<Integer> list = CompareUtil.getTop_KSort(list1,2);
+							out.collect(new Tuple2<List<Tuple3<Integer,Integer,Double>>, List<Integer>>(list1, list));
+							//mapout.put(entry.getKey(), new Tuple2<List<Tuple3<Integer,Integer,Double>>, List<Integer>>(list1, list));
+						}
+			//			System.out.println("------------");
 					}
-				}).print().setParallelism(3);
+				});
+				
+			   streamLB.timeWindowAll(Time.seconds(20)).apply(new AllWindowFunction<Tuple2<List<Tuple3<Integer,Integer,Double>>,List<Integer>>, List<Integer>, TimeWindow>() {
+
+					/**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
+			
+					@Override
+					public void apply(
+							TimeWindow window,
+							Iterable<Tuple2<List<Tuple3<Integer, Integer, Double>>, List<Integer>>> values,
+							Collector<List<Integer>> out) throws Exception {
+						// TODO Auto-generated method stub
+						List<Integer> list=new ArrayList<Integer>();
+						values.forEach(value->{
+							System.out.println(value.toString());
+						  for (Integer i : value.f1) {
+							  if(!list.contains(i))
+								  list.add(i);
+						}
+						});
+						out.collect(list);
+						System.out.println("------------");
+					}
+				}).setParallelism(1);
+    
 		env.execute("LCSS");
 	}
-
 }

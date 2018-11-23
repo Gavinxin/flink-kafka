@@ -1,6 +1,7 @@
 package com.lcss.util;
 
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -9,6 +10,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import org.apache.flink.api.java.tuple.Tuple2;
+import org.apache.flink.api.java.tuple.Tuple3;
 
 import com.ts.lcss.MinHeap;
 
@@ -101,4 +105,27 @@ public class CompareUtil {
 		for (Entry<Integer, Double> entry : map.entrySet())
 			  System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue()); 
 	}
+	public static List<Integer> getTop_KSort (
+			List<Tuple3<Integer, Integer, Double>> list1, int k) {
+		// TODO Auto-generated method stub
+		List<Integer> list=new ArrayList<Integer>();
+		list1.sort(new Comparator<Tuple3<Integer, Integer, Double>>() {
+
+			@Override
+			public int compare(Tuple3<Integer, Integer, Double> o1,
+					Tuple3<Integer, Integer, Double> o2) {
+				// TODO Auto-generated method stub\
+				if(o1.f2>=o2.f2)
+					return -1;
+				return 1;
+			}
+		});
+		for (int i = 0; i < k; i++) {
+			if(i<list1.size())
+			  list.add(list1.get(i).f1);
+		}
+
+		return list;
+	}
+	
 }
