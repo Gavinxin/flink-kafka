@@ -12,8 +12,9 @@ public class UpperBounds {
 	private List<GPSTrack> Q = new ArrayList<GPSTrack>();
 	private List<GPSTrack> T = new ArrayList<GPSTrack>();
 	
-	public UpperBounds(Long xTime, double xLnSpace, double xLaSpace,
-			List<GPSTrack> q, List<GPSTrack> t) {
+	
+	public UpperBounds(double xLnSpace, double xLaSpace, List<GPSTrack> q,
+			List<GPSTrack> t) {
 		super();
 		XLnSpace = xLnSpace;
 		XLaSpace = xLaSpace;

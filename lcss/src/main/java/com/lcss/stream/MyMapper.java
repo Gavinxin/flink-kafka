@@ -9,7 +9,6 @@ public class MyMapper extends RichMapFunction<GPSTrack, GPSTrack>{
 
 	private static final long serialVersionUID = 1L;
 	private int pid;
-
 	@Override
 	public void open(Configuration config) {
 		pid = getRuntimeContext().getIndexOfThisSubtask();

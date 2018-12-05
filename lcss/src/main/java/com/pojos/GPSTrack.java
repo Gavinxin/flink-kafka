@@ -38,7 +38,82 @@ public class GPSTrack {
 	    private Date outtime;
 	    private Double longitude;
 	    private Double latitude;
-	    private String note;
+	    @Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + ((id == null) ? 0 : id.hashCode());
+			result = prime * result
+					+ ((intime == null) ? 0 : intime.hashCode());
+			result = prime * result
+					+ ((latitude == null) ? 0 : latitude.hashCode());
+			result = prime * result
+					+ ((longitude == null) ? 0 : longitude.hashCode());
+			result = prime * result + ((note == null) ? 0 : note.hashCode());
+			result = prime * result
+					+ ((outtime == null) ? 0 : outtime.hashCode());
+			result = prime * result + ((pid == null) ? 0 : pid.hashCode());
+			result = prime * result
+					+ ((timeStamp == null) ? 0 : timeStamp.hashCode());
+			result = prime * result + uid;
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			GPSTrack other = (GPSTrack) obj;
+			if (id == null) {
+				if (other.id != null)
+					return false;
+			} else if (!id.equals(other.id))
+				return false;
+			if (intime == null) {
+				if (other.intime != null)
+					return false;
+			} else if (!intime.equals(other.intime))
+				return false;
+			if (latitude == null) {
+				if (other.latitude != null)
+					return false;
+			} else if (!latitude.equals(other.latitude))
+				return false;
+			if (longitude == null) {
+				if (other.longitude != null)
+					return false;
+			} else if (!longitude.equals(other.longitude))
+				return false;
+			if (note == null) {
+				if (other.note != null)
+					return false;
+			} else if (!note.equals(other.note))
+				return false;
+			if (outtime == null) {
+				if (other.outtime != null)
+					return false;
+			} else if (!outtime.equals(other.outtime))
+				return false;
+			if (pid == null) {
+				if (other.pid != null)
+					return false;
+			} else if (!pid.equals(other.pid))
+				return false;
+			if (timeStamp == null) {
+				if (other.timeStamp != null)
+					return false;
+			} else if (!timeStamp.equals(other.timeStamp))
+				return false;
+			if (uid != other.uid)
+				return false;
+			return true;
+		}
+
+		private String note;
 
 	    public Date getIntime() {
 			return intime;

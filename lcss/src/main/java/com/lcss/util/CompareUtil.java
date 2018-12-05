@@ -105,15 +105,15 @@ public class CompareUtil {
 		for (Entry<Integer, Double> entry : map.entrySet())
 			  System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue()); 
 	}
-	public static List<Integer> getTop_KSort (
-			List<Tuple3<Integer, Integer, Double>> list1, int k) {
+	public static List<Tuple3<Integer, Integer, Integer>> getTop_KSort (
+			List<Tuple3<Integer, Integer, Integer>> list1, int k) {
 		// TODO Auto-generated method stub
-		List<Integer> list=new ArrayList<Integer>();
-		list1.sort(new Comparator<Tuple3<Integer, Integer, Double>>() {
+		List<Tuple3<Integer, Integer, Integer>> list=new ArrayList<Tuple3<Integer, Integer, Integer>>();
+		list1.sort(new Comparator<Tuple3<Integer, Integer, Integer>>() {
 
 			@Override
-			public int compare(Tuple3<Integer, Integer, Double> o1,
-					Tuple3<Integer, Integer, Double> o2) {
+			public int compare(Tuple3<Integer, Integer, Integer> o1,
+					Tuple3<Integer, Integer, Integer> o2) {
 				// TODO Auto-generated method stub\
 				if(o1.f2>=o2.f2)
 					return -1;
@@ -122,9 +122,8 @@ public class CompareUtil {
 		});
 		for (int i = 0; i < k; i++) {
 			if(i<list1.size())
-			  list.add(list1.get(i).f1);
+			  list.add(list1.get(i));
 		}
-
 		return list;
 	}
 	
