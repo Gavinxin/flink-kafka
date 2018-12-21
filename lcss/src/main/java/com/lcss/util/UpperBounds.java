@@ -45,7 +45,6 @@ public class UpperBounds {
 				if(gpsTrack.getLatitude()>mbeBox.getLowerLatitude()&&gpsTrack.getLatitude()<mbeBox.getUpperLatitude()&&gpsTrack.getLongitude()>mbeBox.getLowerLongitude()&&gpsTrack.getLongitude()<mbeBox.getUpperLongitude())
 					{
 						count++;
-						break;
 					}
 				
 			}

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -14,12 +15,30 @@ import java.util.Map.Entry;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.tuple.Tuple3;
 
+import com.pojos.GPSTrack;
 import com.ts.lcss.MinHeap;
 
 public class CompareUtil {
-	public static <T> Map<Integer,Double> getTop_K(Map<Integer,Double> map){
+	public static  Map<Integer,Double> getTop_K(Map<Integer,Double> map){
 		Map<Integer,Double> descmap = sortMapByValueDescending(map);
 		return descmap;
+	}
+	public static  Map<Integer,List<Integer>> mapSort(Map<Integer,Map<Integer,Integer>> map,int k){
+		Iterator<Entry<Integer, Map<Integer, Integer>>> entries = map.entrySet().iterator();
+		Map<Integer,List<Integer>> resultMap=new HashMap<Integer, List<Integer>>();
+		while(entries.hasNext()){
+			Entry<Integer, Map<Integer, Integer>> entry=entries.next();
+			Map<Integer, Integer> descmap = sortMapByValueDescending(entry.getValue());
+			Iterator<Entry<Integer, Integer>> entries1 = descmap.entrySet().iterator();
+			int i=0;
+			List<Integer> list =new ArrayList<Integer>();
+			while (i<k&&entries1.hasNext()) {
+				list.add(entries1.next().getKey());
+				i++;
+			}
+			resultMap.put(entry.getKey(),list);
+		}
+		return resultMap;
 	}
 	public static  <K, V extends Comparable<? super V>> Map<K, V> sortMapByValueDescending(Map<K, V> map)
     {
